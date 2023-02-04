@@ -37,7 +37,7 @@ const ItemPreview = (props) => {
     >
       <img
         alt="item"
-        src={item.image}
+        src={item.image || "placeholder.png"}
         className="card-img-top item-img"
         style={{ borderRadius: "20px" }}
       />
@@ -49,7 +49,7 @@ const ItemPreview = (props) => {
         <div className="d-flex flex-row align-items-center pt-2 item-footer">
           <Link to={`/@${item.seller.username}`} className="flex-grow-1">
             <img
-              src={item.seller.image}
+              src={item.seller.image || "verified_seller.svg"}
               alt={item.seller.username}
               className="user-pic rounded-circle pr-1"
             />
