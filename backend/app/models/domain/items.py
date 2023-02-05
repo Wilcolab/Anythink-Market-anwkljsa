@@ -13,5 +13,5 @@ class Item(IDModelMixin, DateTimeModelMixin, RWModel):
     seller: Profile
     favorited: bool
     favorites_count: int
-    image: Optional[str] 
+    image: Optional[str]
     body: Optional[str]

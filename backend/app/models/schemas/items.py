@@ -15,8 +15,7 @@ class ItemForResponse(RWSchema, Item):
 
 class ItemInResponse(RWSchema):
     item: ItemForResponse
-    
-    
+
 
 class ItemInCreate(RWSchema):
     title: str
