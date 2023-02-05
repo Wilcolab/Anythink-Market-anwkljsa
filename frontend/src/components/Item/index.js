@@ -8,6 +8,7 @@ import {
   ITEM_PAGE_UNLOADED,
 } from "../../constants/actionTypes";
 import { getItemAndComments } from "./utils/ItemFetcher";
+import placeholder from '../../imgs/placeholder.png';
 
 const mapStateToProps = (state) => ({
   ...state.item,
@@ -32,8 +33,13 @@ class Item extends React.Component {
   }
 
   render() {
+    let img = this.props.image;
     if (!this.props.item) {
       return null;
+    }
+
+    if (typeof img === 'undefined') {
+      img = placeholder;
     }
 
     const markup = {
@@ -48,7 +54,7 @@ class Item extends React.Component {
           <div className="row bg-white p-4">
             <div className="col-6">
               <img
-                src={this.props.item.image}
+                src={img}
                 alt={this.props.item.title}
                 className="item-img"
                 style={{ height: "500px", width: "100%", borderRadius: "6px" }}
