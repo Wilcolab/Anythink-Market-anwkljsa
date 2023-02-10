@@ -103,6 +103,7 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
     async def filter_items(  # noqa: WPS211
         self,
         *,
+        title: Optional[str] = None,
         tag: Optional[str] = None,
         seller: Optional[str] = None,
         favorited: Optional[str] = None,
@@ -136,6 +137,35 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
             ),
         )
         # fmt: on
+
+        if title:
+
+             # fmt: off 
+            query = Query.from_(
+                items,
+            ).select(
+                items.id,
+                items.slug,
+                items.title,
+                items.description,
+                items.body,
+                items.image,
+                items.created_at,
+                items.updated_at,
+                Query.from_(
+                    users,
+                ).where(
+                    users.id == items.seller_id,
+                ).select(
+                    users.username,
+                ).as_(
+                    SELLER_USERNAME_ALIAS,
+                ),
+            ).where(
+                items.title.like(f"%{title}%")
+            )
+
+            # fmt: on 
 
         if tag:
             query_params.append(tag)
