@@ -44,7 +44,7 @@ async def list_items(
         title=items_filters.title,
     )
     items_for_response = [
-        ItemForResponse.from_orm(item) for item in items
+        ItemForResponse.from_orm(item) for item in items 
     ]
     return ListOfItemsInResponse(
         items=items_for_response,
