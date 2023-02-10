@@ -139,8 +139,6 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
         # fmt: on
 
         if title:
-            query_params.append(title)
-            query_params_count += 1
 
              # fmt: off 
             query = Query.from_(
