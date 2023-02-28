@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - main
-      
+
 concurrency:
   group: k8s
   cancel-in-progress: true
-  
+
 jobs:
   check-kubernetes-enabled:
     runs-on: ubuntu-latest
@@ -106,11 +106,11 @@ jobs:
 
       - name: Set repository name
         run: |
-            if [ ${{ secrets.CLUSTER_ENV }} == 'staging' ]; then
-              echo "REPO_NAME=staging-anythink-frontend" >> $GITHUB_ENV
-            else
-              echo "REPO_NAME=anythink-frontend" >> $GITHUB_ENV
-            fi
+          if [ ${{ secrets.CLUSTER_ENV }} == 'staging' ]; then
+            echo "REPO_NAME=staging-anythink-frontend" >> $GITHUB_ENV
+          else
+            echo "REPO_NAME=anythink-frontend" >> $GITHUB_ENV
+          fi
 
       - name: Build, tag, and push frontend image to Amazon ECR
         id: build-image-frontend

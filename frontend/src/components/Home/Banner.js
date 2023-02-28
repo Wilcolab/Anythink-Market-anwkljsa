@@ -15,13 +15,13 @@ const Banner = (props) => {
         <div>
           <span>A place to </span>
           <span id="get-part">get</span>
-            <input 
-            id="search-box" 
-            type="search" 
+          <input
+            id="search-box"
+            type="search"
             placeholder="What do you desire?"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            />
+          />
           <span> the cool stuff.</span>
         </div>
       </div>

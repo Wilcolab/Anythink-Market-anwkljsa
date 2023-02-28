@@ -1,10 +1,8 @@
-Web routes
-==========
+# Web routes
 
 All routes are available on `/docs` or `/redoc` paths with Swagger or ReDoc.
 
-Project structure
-=================
+# Project structure
 
 Files related to application are in the `app` or `tests` directories. Application parts are:
 
@@ -24,7 +22,6 @@ Files related to application are in the `app` or `tests` directories. Applicatio
     ├── services         - logic that is not just crud related.
     └── main.py          - FastAPI application creation and configuration.
 
-Project structure
-=================
+# Project structure
 
 Project dependencies are managed by poetry (https://python-poetry.org), using venv (https://docs.python.org/3/library/venv.html).
