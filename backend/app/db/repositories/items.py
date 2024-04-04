@@ -1,7 +1,7 @@
 from typing import List, Optional, Sequence, Union
 
 from asyncpg import Connection, Record
-from pypika import Query
+from pypika import Query, Order
 
 from app.db.errors import EntityDoesNotExist
 from app.db.queries.queries import queries
@@ -72,25 +72,35 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
         title: Optional[str] = None,
         body: Optional[str] = None,
         description: Optional[str] = None,
+        image: Optional[str] = None, 
+        tags: Optional[Sequence[str]] = None,
     ) -> Item:
         updated_item = item.copy(deep=True)
-        updated_item.slug = slug or updated_item.slug
         updated_item.title = title or item.title
         updated_item.body = body or item.body
         updated_item.description = description or item.description
+        updated_item.image = image or item.image
 
         async with self.connection.transaction():
             updated_item.updated_at = await queries.update_item(
                 self.connection,
                 slug=item.slug,
-                seller_username=item.seller.username,
-                new_slug=updated_item.slug,
+                seller_username=item.seller.username,            
                 new_title=updated_item.title,
                 new_body=updated_item.body,
                 new_description=updated_item.description,
+                new_image=updated_item.image,
             )
 
-        return updated_item
+        if tags:
+            await self._tags_repo.create_tags_that_dont_exist(tags=tags)
+            await self._unlink_item_from_tags(slug=item.slug)
+            await self._link_item_with_tags(slug=item.slug, tags=tags)
+
+        return await self.get_item_by_slug(
+            slug=item.slug,
+            requested_user=item.seller,
+        )
 
     async def delete_item(self, *, item: Item) -> None:
         async with self.connection.transaction():
@@ -103,7 +113,6 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
     async def filter_items(  # noqa: WPS211
         self,
         *,
-        title: Optional[str] = None,
         tag: Optional[str] = None,
         seller: Optional[str] = None,
         favorited: Optional[str] = None,
@@ -135,37 +144,10 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
             ).as_(
                 SELLER_USERNAME_ALIAS,
             ),
+        ).orderby(
+            items.created_at, order=Order.desc,
         )
         # fmt: on
-
-        if title:
-
-             # fmt: off 
-            query = Query.from_(
-                items,
-            ).select(
-                items.id,
-                items.slug,
-                items.title,
-                items.description,
-                items.body,
-                items.image,
-                items.created_at,
-                items.updated_at,
-                Query.from_(
-                    users,
-                ).where(
-                    users.id == items.seller_id,
-                ).select(
-                    users.username,
-                ).as_(
-                    SELLER_USERNAME_ALIAS,
-                ),
-            ).where(
-                items.title.like(f"%{title}%")
-            )
-
-            # fmt: on 
 
         if tag:
             query_params.append(tag)
@@ -362,4 +344,10 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
         await queries.add_tags_to_item(
             self.connection,
             [{SLUG_ALIAS: slug, "tag": tag} for tag in tags],
+        )
+
+    async def _unlink_item_with_tags(self, *, slug: str) -> None:
+        await queries.delete_tags_from_item(
+            self.connection,
+                slug=slug,
         )

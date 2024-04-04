@@ -9,7 +9,7 @@ services:
             poetry export -f "requirements.txt" --without-hashes --with-credentials > "requirements.txt"
             /wait-for-it.sh postgres-python:5432 -q -t 60 && 
             poetry run alembic upgrade head &&
-            poetry run uvicorn --host=0.0.0.0 --port=3000 --reload app.main:app"
+            poetry run gunicorn app.main:app --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0:3000 --workers=5"
     working_dir: /usr/src
     volumes:
       - ./:/usr/src
@@ -58,11 +58,10 @@ services:
       - '5433:5432'
 
   anythink-ack:
-    build: ./frontend
+    image: public.ecr.aws/v0a2l7y2/wilco/anythink-ack:latest
     container_name: anythink-ack
-    command: sh -c "/wait-for-it.sh anythink-frontend-react:3001 -q -t 1000 && ./anythink_ack.sh"
-    working_dir: /usr/src
-    volumes:
-      - ./:/usr/src/
+    environment:
+      - GITHUB_TOKEN=$GITHUB_TOKEN
+      - CODESPACE_NAME=$CODESPACE_NAME
     depends_on:
       - "anythink-frontend-react"

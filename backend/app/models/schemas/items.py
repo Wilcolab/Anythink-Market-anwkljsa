@@ -29,6 +29,8 @@ class ItemInUpdate(RWSchema):
     title: Optional[str] = None
     description: Optional[str] = None
     body: Optional[str] = None
+    image: Optional[str] = None
+    tags: Optional[List[str]] = Field(None, alias="tagList")
 
 
 class ListOfItemsInResponse(RWSchema):
@@ -37,7 +39,6 @@ class ListOfItemsInResponse(RWSchema):
 
 
 class ItemsFilters(BaseModel):
-    title: Optional[str] = None
     tag: Optional[str] = None
     seller: Optional[str] = None
     favorited: Optional[str] = None
